@@ -173,7 +173,9 @@ namespace Reverse_Olaf
             var target = TargetSelector.GetTarget(Q.Range, DamageType.Physical);
             var useQ = SettingsMenu["Qkill"].Cast<CheckBox>().CurrentValue;
             var useE = SettingsMenu["Ekill"].Cast<CheckBox>().CurrentValue;
+
             Chat.Print("FUNCIONA");
+
             if (Q.IsReady() && useQ && target.IsValidTarget(Q.Range) && !target.IsDead && !target.IsZombie && target.Health <= GetDamage(SpellSlot.Q, target))
             {
                 Q.Cast(target);
