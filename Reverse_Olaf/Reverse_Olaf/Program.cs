@@ -11,11 +11,11 @@ using Color = System.Drawing.Color;
 using SharpDX;
 
 
-namespace Reverse_Katarina
+namespace Reverse_Olaf
 {
     class Program
     {
-        public static Spell.Targeted Q;
+        public static Spell.Skillshot Q;
         public static Spell.Active W;
         public static Spell.Targeted E;
         public static Spell.Active R;
@@ -33,20 +33,19 @@ namespace Reverse_Katarina
 
         private static void Loading_OnLoadingComplete(EventArgs args)
         {
-            if (Player.Instance.ChampionName != "Katarina")
+            if (Player.Instance.ChampionName != "Olaf")
                 return;
 
             Bootstrap.Init(null);
 
             uint level = (uint)Player.Instance.Level;
-            Q = new Spell.Targeted(SpellSlot.Q, 675);
-            W = new Spell.Active(SpellSlot.W, 375);
-            E = new Spell.Targeted(SpellSlot.E, 700);
-            R = new Spell.Active(SpellSlot.R, 550);
+            Q = new Spell.Skillshot(SpellSlot.Q, 1000, SkillShotType.Linear, 250, 1600, 100);
+            W = new Spell.Active(SpellSlot.W);
+            E = new Spell.Targeted(SpellSlot.E, 320);
+            R = new Spell.Active(SpellSlot.R);
 
-
-            Menu = MainMenu.AddMenu("Reverse Katarina", "Reverse Katarina");
-            Menu.AddGroupLabel("Reverse Katarina 0.1");
+            Menu = MainMenu.AddMenu("Reverse Olaf", "Reverse Olaf");
+            Menu.AddGroupLabel("Reverse Olaf 0.1");
 
             Menu.AddSeparator();
 
@@ -63,19 +62,28 @@ namespace Reverse_Katarina
             SettingsMenu.AddLabel("Harass");
             SettingsMenu.Add("QHarass", new CheckBox("Use Q on Harass"));
             SettingsMenu.Add("WHarass", new CheckBox("Use W on Harass"));
+            SettingsMenu.Add("EHarass", new CheckBox("Use E on Harass"));
+
+            SettingsMenu.AddLabel("LastHit");
+            SettingsMenu.Add("Qlasthit", new CheckBox("Use Q on LastHit"));
+            SettingsMenu.Add("Elasthit", new CheckBox("Use E on LastHit"));
+            SettingsMenu.Add("QlasthitMana", new Slider("Mana % To Use Q", 30, 0, 100));
 
             SettingsMenu.AddLabel("LaneClear");
             SettingsMenu.Add("QLaneClear", new CheckBox("Use Q on LaneClear"));
             SettingsMenu.Add("WLaneClear", new CheckBox("Use W on LaneClear"));
+            SettingsMenu.Add("ELaneClear", new CheckBox("Use E on LaneClear"));
+            SettingsMenu.Add("QlaneclearMana", new Slider("Mana % To Use Q", 30, 0, 100));
+            SettingsMenu.Add("WlaneclearMana", new Slider("Mana % To Use Q", 30, 0, 100));
 
             SettingsMenu.AddLabel("KillSteal");
-            SettingsMenu.Add("Wkill", new CheckBox("Use W KillSteal"));
-            SettingsMenu.Add("Rkill", new CheckBox("Use R KillSteal"));
+            SettingsMenu.Add("Qkill", new CheckBox("Use Q KillSteal"));
+            SettingsMenu.Add("Ekill", new CheckBox("Use E KillSteal"));
 
             SettingsMenu.AddLabel("Draw");
             SettingsMenu.Add("drawQ", new CheckBox("Draw Q"));
-            SettingsMenu.Add("drawE", new CheckBox("Draw E"));
             SettingsMenu.Add("drawW", new CheckBox("Draw W"));
+            SettingsMenu.Add("drawE", new CheckBox("Draw E"));
             SettingsMenu.Add("drawR", new CheckBox("Draw R"));
 
             Game.OnTick += Game_OnTick;
@@ -83,8 +91,6 @@ namespace Reverse_Katarina
         }
         private static void Game_OnTick(EventArgs args)
         {
-            checkUlt();
-
             if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Combo))
             {
                 Combo();
@@ -96,7 +102,11 @@ namespace Reverse_Katarina
             if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.LaneClear))
             {
                 LaneClear();
-            } 
+            }
+            if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.LastHit))
+            {
+                LastHit();
+            }
         }
 
         //Get Damages
@@ -108,19 +118,19 @@ namespace Reverse_Katarina
             {
                 if (!Q.IsReady())
                     return 0;
-                return _Player.CalculateDamageOnUnit(target, DamageType.Magical, 60f + 25f * (Q.Level - 1) + 45 / 100 * ap);
+                return _Player.CalculateDamageOnUnit(target, DamageType.Physical, 70f + 45f * (Q.Level - 1) + 100 / 100 * ad);
             }
             else if (spell == SpellSlot.W)
             {
                 if (!W.IsReady())
                     return 0;
-                return _Player.CalculateDamageOnUnit(target, DamageType.Magical, 40f + 35f * (W.Level - 1) + 25 / 100 * ap + 60 / 100 * ad);
+                return _Player.CalculateDamageOnUnit(target, DamageType.Magical, 0f + 0f * (W.Level - 1) + 0 / 100 * ap + 0 / 100 * ad);
             }
             else if (spell == SpellSlot.E)
             {
                 if (!E.IsReady())
                     return 0;
-                return _Player.CalculateDamageOnUnit(target, DamageType.Magical, 60f + 25f * (E.Level - 1) + 40 / 100 * ap);
+                return _Player.CalculateDamageOnUnit(target, DamageType.True, 70f + 45f * (E.Level - 1) + 40 / 100 * ad);
             }
             else if (spell == SpellSlot.R)
             {
@@ -133,13 +143,15 @@ namespace Reverse_Katarina
         }
         private static void Combo()
         {
-            var target = TargetSelector.GetTarget(1000, DamageType.Magical);
+            var target = TargetSelector.GetTarget(Q.Range, DamageType.Physical);
             var useQ = SettingsMenu["QCombo"].Cast<CheckBox>().CurrentValue;
             var useW = SettingsMenu["WCombo"].Cast<CheckBox>().CurrentValue;
             var useE = SettingsMenu["ECombo"].Cast<CheckBox>().CurrentValue;
             var useR = SettingsMenu["RCombo"].Cast<CheckBox>().CurrentValue;
-           
-            if (useQ && Q.IsReady() && target.IsValidTarget(Q.Range) && !target.IsDead && !target.IsZombie)
+
+            Q.AllowedCollisionCount = int.MaxValue;
+
+            if (useQ && Q.IsReady() && target.IsValidTarget(Q.Range -20) && !target.IsDead && !target.IsZombie && Q.GetPrediction(target).HitChance >= HitChance.High)
             {
                 Q.Cast(target);
             }
@@ -147,84 +159,91 @@ namespace Reverse_Katarina
             {
                 E.Cast(target);
             }
-            if (W.IsReady() && useW && target.IsValidTarget(W.Range) && !target.IsDead && !target.IsZombie)
+            if (W.IsReady() && useW && target.IsValidTarget(_Player.AttackRange) && !target.IsDead && !target.IsZombie)
             {
                 W.Cast();
             }
-            if (R.IsReady() && useR && target.IsValidTarget(R.Range) && !target.IsDead && !target.IsZombie)
+            if (R.IsReady() && useR && !target.IsDead && !target.IsZombie)
             {
-                Orbwalker.DisableMovement = true;
-                Orbwalker.DisableAttacking = true;
                 R.Cast();
             }
         }
         private static void KillSteal()
         {
-            var target = TargetSelector.GetTarget(_Player.AttackRange, DamageType.Magical);
+            var target = TargetSelector.GetTarget(Q.Range, DamageType.Physical);
             var useQ = SettingsMenu["Qkill"].Cast<CheckBox>().CurrentValue;
-            var useW = SettingsMenu["Wkill"].Cast<CheckBox>().CurrentValue;
-            var useEW = SettingsMenu["EWkill"].Cast<CheckBox>().CurrentValue;
+            var useE = SettingsMenu["Ekill"].Cast<CheckBox>().CurrentValue;
 
-            if (Q.IsReady() && useQ && target.IsValidTarget(E.Range) && !target.IsDead && !target.IsZombie && target.Health <= GetDamage(SpellSlot.Q, target))
+            if (Q.IsReady() && useQ && target.IsValidTarget(Q.Range -20) && !target.IsDead && !target.IsZombie && target.Health <= GetDamage(SpellSlot.Q, target))
             {
-               Q.Cast(target);
+                Q.Cast(target);
             }
-            if (W.IsReady() && useW && target.IsValidTarget(W.Range) && !target.IsDead && !target.IsZombie && target.Health <= GetDamage(SpellSlot.W, target))
-            {
-                W.Cast();
-            }
-            var EWdamage = (GetDamage(SpellSlot.E, target) + (GetDamage(SpellSlot.W, target)));
-            if (useEW && W.IsReady() && target.IsValidTarget(R.Range) && !target.IsDead && !target.IsZombie && target.Health <= EWdamage)
+            if (E.IsReady() && useE && target.IsValidTarget(E.Range) && !target.IsDead && !target.IsZombie && target.Health <= GetDamage(SpellSlot.E, target))
             {
                 E.Cast(target);
-                W.Cast();
             }
         }
         private static void Harass()
         {
-            var target = TargetSelector.GetTarget(_Player.AttackRange, DamageType.Magical);
-            var useQ = SettingsMenu["Qh"].Cast<CheckBox>().CurrentValue;
-            var useE = SettingsMenu["Eh"].Cast<CheckBox>().CurrentValue;
+            var target = TargetSelector.GetTarget(Q.Range, DamageType.Physical);
+            var useQ = SettingsMenu["QHarass"].Cast<CheckBox>().CurrentValue;
+            var useW = SettingsMenu["WHarass"].Cast<CheckBox>().CurrentValue;
+            var useE = SettingsMenu["EHarass"].Cast<CheckBox>().CurrentValue;
 
+            if (Q.IsReady() && useQ && target.IsValidTarget(Q.Range) && !target.IsDead && !target.IsZombie)
+            {
+                Q.Cast(target);
+            }
+            if (W.IsReady() && useW && target.IsValidTarget(_Player.AttackRange) && !target.IsDead && !target.IsZombie)
+            {
+                W.Cast();
+            }
             if (E.IsReady() && useE && target.IsValidTarget(E.Range) && !target.IsDead && !target.IsZombie)
             {
                 E.Cast(target);
-            }
-            if (useQ && Q.IsReady() && target.IsValidTarget(Q.Range) && target.HasBuff("tristanaecharge") && !target.IsDead && !target.IsZombie)
-            {
-                Q.Cast();
             }
 
         }
         private static void LaneClear()
         {
-            var minion = ObjectManager.Get<Obj_AI_Minion>().FirstOrDefault(a => a.IsEnemy && !a.IsDead && a.Distance(_Player) < _Player.AttackRange);
-            var tower = ObjectManager.Get<Obj_AI_Turret>().FirstOrDefault(a => a.IsEnemy && !a.IsDead && a.Distance(_Player) < _Player.AttackRange);
-            var useQ = SettingsMenu["Qlc"].Cast<CheckBox>().CurrentValue;
-            var useE = SettingsMenu["Elc"].Cast<CheckBox>().CurrentValue;
-            var useETower = SettingsMenu["Etower"].Cast<CheckBox>().CurrentValue;
-            if (useE && E.IsReady())
+            var useQ = SettingsMenu["QLaneClear"].Cast<CheckBox>().CurrentValue;
+            var useW = SettingsMenu["WLaneClear"].Cast<CheckBox>().CurrentValue;
+            var useE = SettingsMenu["ELaneClear"].Cast<CheckBox>().CurrentValue;
+            var Qmana = SettingsMenu["QlaneclearMana"].Cast<Slider>().CurrentValue;
+            var Wmana = SettingsMenu["WlaneclearMana"].Cast<Slider>().CurrentValue;
+            var minions = ObjectManager.Get<Obj_AI_Base>().OrderBy(m => m.Health).Where(m => m.IsMinion && m.IsEnemy && !m.IsDead);
+            foreach (var minion in minions)
             {
-                E.Cast(minion);
+                if (useQ && Q.IsReady() && Player.Instance.ManaPercent > Qmana && minion.Health <= GetDamage(SpellSlot.Q, minion))
+                {
+                    Q.Cast(minion);
+                }
+                if (useW && W.IsReady() && Player.Instance.ManaPercent > Wmana && minion.Health <= GetDamage(SpellSlot.W, minion))
+                {
+                    W.Cast();
+                }
+                if (useE && Q.IsReady() && minion.Health <= GetDamage(SpellSlot.E, minion))
+                {
+                    E.Cast(minion);
+                }
             }
-            if (useQ && Q.IsReady())
-            {
-                Q.Cast();
-            }
-            if (useETower && E.IsReady() && minion == null)
-            {
-                E.Cast(tower);
-                Q.Cast();
-            }
-
         }
-
-        private static void checkUlt()
+        private static void LastHit()
         {
-            if (!Player.HasBuff("katarinarsound") || _Player.HasBuff("KatarinaR") || Player.Instance.Spellbook.IsChanneling)
+            var useQ = SettingsMenu["Qlasthit"].Cast<CheckBox>().CurrentValue;
+            var useE = SettingsMenu["Elasthit"].Cast<CheckBox>().CurrentValue;
+            var mana = SettingsMenu["QlasthitMana"].Cast<Slider>().CurrentValue;
+            var minions = ObjectManager.Get<Obj_AI_Base>().OrderBy(m => m.Health).Where(m => m.IsMinion && m.IsEnemy && !m.IsDead);
+            foreach (var minion in minions)
             {
-                Orbwalker.DisableMovement = false;
-                Orbwalker.DisableAttacking = false;
+                if (useQ && Q.IsReady() && Player.Instance.ManaPercent > mana && minion.Health <= GetDamage(SpellSlot.Q, minion))
+                {
+                    Q.Cast(minion);
+                }
+                if (useE && E.IsReady() && minion.Health <= GetDamage(SpellSlot.E, minion))
+                {
+                    E.Cast(minion);
+                }
             }
         }
         private static void Drawing_OnDraw(EventArgs args)
