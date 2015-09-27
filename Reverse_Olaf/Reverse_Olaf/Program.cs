@@ -49,7 +49,7 @@ namespace Reverse_Olaf
 
             Menu.AddSeparator();
 
-            Menu.AddLabel("Made By MarioGK");
+            Menu.AddLabel("Made By Reverse Flash");
             SettingsMenu = Menu.AddSubMenu("Settings", "Settings");
 
             SettingsMenu.AddGroupLabel("Settings");
@@ -222,7 +222,7 @@ namespace Reverse_Olaf
                 {
                     W.Cast();
                 }
-                if (useE && Q.IsReady() && minion.Health <= GetDamage(SpellSlot.E, minion))
+                if (useE && E.IsReady() && !minion.IsValidTarget(E.Range) && minion.Health <= GetDamage(SpellSlot.E, minion))
                 {
                     E.Cast(minion);
                 }
