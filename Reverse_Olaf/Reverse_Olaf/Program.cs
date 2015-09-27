@@ -44,8 +44,8 @@ namespace Reverse_Olaf
             E = new Spell.Targeted(SpellSlot.E, 320);
             R = new Spell.Active(SpellSlot.R);
 
-            Menu = MainMenu.AddMenu("Reverse Olaf", "Reverse Olaf");
-            Menu.AddGroupLabel("Reverse Olaf 0.5");
+            Menu = MainMenu.AddMenu("Reverse Olaf", "reverseolaf");
+            Menu.AddGroupLabel("Reverse Olaf 0.6");
 
             Menu.AddSeparator();
 
@@ -71,11 +71,11 @@ namespace Reverse_Olaf
 
             SettingsMenu.AddLabel("LaneClear");
             SettingsMenu.Add("QLaneClear", new CheckBox("Use Q on LaneClear"));
-            SettingsMenu.Add("WLaneClear", new CheckBox("Use W on LaneClear"));
-            SettingsMenu.Add("ELaneClear", new CheckBox("Use E on LaneClear"));
             SettingsMenu.Add("QlaneclearMana", new Slider("Mana % To Use Q", 30, 0, 100));
+            SettingsMenu.Add("WLaneClear", new CheckBox("Use W on LaneClear"));
             SettingsMenu.Add("WlaneclearMana", new Slider("Mana % To Use W", 30, 0, 100));
-
+            SettingsMenu.Add("ELaneClear", new CheckBox("Use E on LaneClear"));
+            
             SettingsMenu.AddLabel("KillSteal");
             SettingsMenu.Add("Qkill", new CheckBox("Use Q KillSteal"));
             SettingsMenu.Add("Ekill", new CheckBox("Use E KillSteal"));
@@ -216,15 +216,15 @@ namespace Reverse_Olaf
             var minions = ObjectManager.Get<Obj_AI_Base>().OrderBy(m => m.Health).Where(m => m.IsMinion && m.IsEnemy && !m.IsDead);
             foreach (var minion in minions)
             {
-                if (useQ && Q.IsReady() && Player.Instance.ManaPercent > Qmana && minion.Health <= GetDamage(SpellSlot.Q, minion))
+                if (useQ && Q.IsReady() && !minion.IsValidTarget(E.Range) && minion.IsValidTarget(Q.Range) && Player.Instance.ManaPercent > Qmana && minion.Health <= GetDamage(SpellSlot.Q, minion))
                 {
                     Q.Cast(minion);
                 }
-                if (useW && W.IsReady() && Player.Instance.ManaPercent > Wmana && minion.Health <= GetDamage(SpellSlot.W, minion))
+                if (useW && W.IsReady() && Player.Instance.ManaPercent > Wmana && minion.IsValidTarget(_Player.AttackRange + 20))
                 {
                     W.Cast();
                 }
-                if (useE && E.IsReady() && !minion.IsValidTarget(E.Range) && minion.Health <= GetDamage(SpellSlot.E, minion))
+                if (useE && E.IsReady() && minion.Health <= GetDamage(SpellSlot.E, minion))
                 {
                     E.Cast(minion);
                 }
