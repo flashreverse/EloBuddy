@@ -74,7 +74,7 @@ namespace Reverse_Olaf
             SettingsMenu.Add("WLaneClear", new CheckBox("Use W on LaneClear"));
             SettingsMenu.Add("ELaneClear", new CheckBox("Use E on LaneClear"));
             SettingsMenu.Add("QlaneclearMana", new Slider("Mana % To Use Q", 30, 0, 100));
-            SettingsMenu.Add("WlaneclearMana", new Slider("Mana % To Use Q", 30, 0, 100));
+            SettingsMenu.Add("WlaneclearMana", new Slider("Mana % To Use W", 30, 0, 100));
 
             SettingsMenu.AddLabel("KillSteal");
             SettingsMenu.Add("Qkill", new CheckBox("Use Q KillSteal"));
@@ -252,13 +252,13 @@ namespace Reverse_Olaf
             {
                 new Circle() { Color = Color.Yellow, BorderWidth = 1, Radius = Q.Range }.Draw(_Player.Position);
             }
-            if (SettingsMenu["drawE"].Cast<CheckBox>().CurrentValue)
-            {
-                new Circle() { Color = Color.Red, BorderWidth = 1, Radius = E.Range }.Draw(_Player.Position);
-            }
             if (SettingsMenu["drawW"].Cast<CheckBox>().CurrentValue)
             {
                 new Circle() { Color = Color.Blue, BorderWidth = 1, Radius = W.Range }.Draw(_Player.Position);
+            }
+            if (SettingsMenu["drawE"].Cast<CheckBox>().CurrentValue)
+            {
+                new Circle() { Color = Color.Red, BorderWidth = 1, Radius = E.Range }.Draw(_Player.Position);
             }
             if (SettingsMenu["drawR"].Cast<CheckBox>().CurrentValue)
             {
