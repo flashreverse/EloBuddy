@@ -45,7 +45,7 @@ namespace Reverse_Olaf
             R = new Spell.Active(SpellSlot.R);
 
             Menu = MainMenu.AddMenu("Reverse Olaf", "Reverse Olaf");
-            Menu.AddGroupLabel("Reverse Olaf 0.1");
+            Menu.AddGroupLabel("Reverse Olaf 0.5");
 
             Menu.AddSeparator();
 
@@ -118,7 +118,7 @@ namespace Reverse_Olaf
             {
                 if (!Q.IsReady())
                     return 0;
-                return _Player.CalculateDamageOnUnit(target, DamageType.Physical, 70f + 45f * (Q.Level - 1) + 100 / 100 * ad);
+                return _Player.CalculateDamageOnUnit(target, DamageType.Physical, 60f + 45f * (Q.Level - 1) + 100 / 100 * ad);
             }
             else if (spell == SpellSlot.W)
             {
