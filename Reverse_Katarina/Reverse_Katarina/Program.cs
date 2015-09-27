@@ -146,6 +146,8 @@ namespace Reverse_Katarina
             if (E.IsReady() && useE && target.IsValidTarget(E.Range) && !target.IsDead && !target.IsZombie)
             {
                 E.Cast(target);
+                Orbwalker.DisableMovement = true;
+                Orbwalker.DisableAttacking = true;
             }
             if (W.IsReady() && useW && target.IsValidTarget(W.Range) && !target.IsDead && !target.IsZombie)
             {
