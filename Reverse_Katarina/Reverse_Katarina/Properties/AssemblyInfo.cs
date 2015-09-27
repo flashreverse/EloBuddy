@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Reverse Katarina")]
+[assembly: AssemblyTitle("Reverse_Katarina")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Reverse Katarina")]
+[assembly: AssemblyProduct("Reverse_Katarina")]
 [assembly: AssemblyCopyright("Copyright ©  2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("dc49ce90-eac2-4d26-b55b-01788e65dc93")]
+[assembly: Guid("f2d3a086-0a5d-46ad-9e4b-422b260cee55")]
 
 // Version information for an assembly consists of the following four values:
 //
