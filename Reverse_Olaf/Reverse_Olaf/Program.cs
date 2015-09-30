@@ -95,14 +95,14 @@ namespace Reverse_Olaf
             SettingsMenu.AddLabel("Draw");
             SettingsMenu.Add("drawQ", new CheckBox("Draw Q"));
             SettingsMenu.Add("drawQpos", new CheckBox("Draw Q Position"));
-            SettingsMenu.Add("drawW", new CheckBox("Draw W"));
             SettingsMenu.Add("drawE", new CheckBox("Draw E"));
-            SettingsMenu.Add("drawR", new CheckBox("Draw R"));
 
             Game.OnTick += Game_OnTick;
             Drawing.OnDraw += Drawing_OnDraw;
             GameObject.OnCreate += GameObject_OnCreate;
             GameObject.OnDelete += GameObject_OnDelete;
+
+            Chat.Print("Reverse Olaf loaded :)", System.Drawing.Color.LightBlue);
         }
         private static void GameObject_OnCreate(GameObject obj, EventArgs args)
         {
@@ -141,39 +141,6 @@ namespace Reverse_Olaf
             }
             KillSteal();
         }
-
-        //Get Damages
-        public static float GetDamage(SpellSlot spell, Obj_AI_Base target)
-        {
-            float ap = _Player.FlatMagicDamageMod + _Player.BaseAbilityDamage;
-            float ad = _Player.FlatMagicDamageMod + _Player.BaseAttackDamage;
-            if (spell == SpellSlot.Q)
-            {
-                if (!Q.IsReady())
-                    return 0;
-                return _Player.CalculateDamageOnUnit(target, DamageType.Physical, 60f + 45f * (Q.Level - 1) + 100 / 100 * ad);
-            }
-            else if (spell == SpellSlot.W)
-            {
-                if (!W.IsReady())
-                    return 0;
-                return _Player.CalculateDamageOnUnit(target, DamageType.Magical, 0f + 0f * (W.Level - 1) + 0 / 100 * ap + 0 / 100 * ad);
-            }
-            else if (spell == SpellSlot.E)
-            {
-                if (!E.IsReady())
-                    return 0;
-                return _Player.CalculateDamageOnUnit(target, DamageType.True, 60f + 45f * (E.Level - 1) + 40 / 100 * ad);
-            }
-            else if (spell == SpellSlot.R)
-            {
-                if (!R.IsReady())
-                    return 0;
-                return _Player.CalculateDamageOnUnit(target, DamageType.Magical, 0f + 0f * (R.Level - 1) + 0 / 100 * ap);
-            }
-
-            return 0;
-        }
         private static void Combo()
         {
             var target = TargetSelector.GetTarget(Q.Range, DamageType.Physical);
@@ -205,11 +172,11 @@ namespace Reverse_Olaf
             var useQ = SettingsMenu["Qkill"].Cast<CheckBox>().CurrentValue;
             var useE = SettingsMenu["Ekill"].Cast<CheckBox>().CurrentValue;
 
-            if (Q.IsReady() && useQ && target.IsValidTarget(Q.Range) && !target.IsDead && !target.IsZombie && target.Health <= GetDamage(SpellSlot.Q, target))
+            if (Q.IsReady() && useQ && target.IsValidTarget(Q.Range) && !target.IsZombie && target.Health <= _Player.GetSpellDamage(target, SpellSlot.Q))
             {
                 Q.Cast(target);
             }
-            if (E.IsReady() && useE && target.IsValidTarget(E.Range) && !target.IsDead && !target.IsZombie && target.Health <= GetDamage(SpellSlot.E, target))
+            if (E.IsReady() && useE && target.IsValidTarget(E.Range) && !target.IsZombie && target.Health <= _Player.GetSpellDamage(target, SpellSlot.E))
             {
                 E.Cast(target);
             }
@@ -245,7 +212,7 @@ namespace Reverse_Olaf
             var minions = ObjectManager.Get<Obj_AI_Base>().OrderBy(m => m.Health).Where(m => m.IsMinion && m.IsEnemy && !m.IsDead);
             foreach (var minion in minions)
             {
-                if (useQ && Q.IsReady() && !minion.IsValidTarget(E.Range) && minion.IsValidTarget(Q.Range) && Player.Instance.ManaPercent > Qmana && minion.Health <= GetDamage(SpellSlot.Q, minion))
+                if (useQ && Q.IsReady() && !minion.IsValidTarget(E.Range) && minion.IsValidTarget(Q.Range) && Player.Instance.ManaPercent > Qmana && minion.Health <= _Player.GetSpellDamage(minion, SpellSlot.Q))
                 {
                     Q.Cast(minion);
                 }
@@ -253,7 +220,7 @@ namespace Reverse_Olaf
                 {
                     W.Cast();
                 }
-                if (useE && E.IsReady() && minion.Health <= GetDamage(SpellSlot.E, minion))
+                if (useE && E.IsReady() && minion.Health <= _Player.GetSpellDamage(minion, SpellSlot.E))
                 {
                     E.Cast(minion);
                 }
@@ -267,11 +234,11 @@ namespace Reverse_Olaf
             var minions = ObjectManager.Get<Obj_AI_Base>().OrderBy(m => m.Health).Where(m => m.IsMinion && m.IsEnemy && !m.IsDead);
             foreach (var minion in minions)
             {
-                if (useQ && Q.IsReady() && !minion.IsValidTarget(E.Range) && minion.IsValidTarget(Q.Range) && Player.Instance.ManaPercent > mana && minion.Health <= GetDamage(SpellSlot.Q, minion))
+                if (useQ && Q.IsReady() && !minion.IsValidTarget(E.Range) && minion.IsValidTarget(Q.Range) && Player.Instance.ManaPercent > mana && minion.Health <= _Player.GetSpellDamage(minion, SpellSlot.Q))
                 {
                     Q.Cast(minion);
                 }
-                if (useE && E.IsReady() && minion.Health <= GetDamage(SpellSlot.E, minion))
+                if (useE && E.IsReady() && minion.Health <= _Player.GetSpellDamage(minion, SpellSlot.E))
                 {
                     E.Cast(minion);
                 }
