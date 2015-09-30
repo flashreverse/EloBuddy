@@ -57,7 +57,7 @@ namespace Reverse_Olaf
             R = new Spell.Active(SpellSlot.R);
 
             Menu = MainMenu.AddMenu("Reverse Olaf", "reverseolaf");
-            Menu.AddGroupLabel("Reverse Olaf 0.12");
+            Menu.AddGroupLabel("Reverse Olaf V0.2");
 
             Menu.AddSeparator();
 
