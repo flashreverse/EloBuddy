@@ -13,6 +13,14 @@ using SharpDX;
 
 namespace Reverse_Olaf
 {
+    internal class OlafAxe
+    {
+        public GameObject Object { get; set; }
+        public float NetworkId { get; set; }
+        public Vector3 AxePos { get; set; }
+        public double ExpireTime { get; set; }
+    }
+
     class Program
     {
         public static Spell.Skillshot Q;
@@ -20,6 +28,7 @@ namespace Reverse_Olaf
         public static Spell.Targeted E;
         public static Spell.Active R;
         public static Menu Menu, SettingsMenu;
+        private static readonly OlafAxe olafAxe = new OlafAxe();
 
         static void Main(string[] args)
         {
@@ -39,17 +48,20 @@ namespace Reverse_Olaf
             Bootstrap.Init(null);
 
             uint level = (uint)Player.Instance.Level;
-            Q = new Spell.Skillshot(SpellSlot.Q, 1000, SkillShotType.Linear, 250, 1600, 100);
+            Q = new Spell.Skillshot(SpellSlot.Q, 1000, SkillShotType.Linear, 250, 1600, 100)
+            {
+                AllowedCollisionCount = int.MaxValue, MinimumHitChance = HitChance.High
+            };
             W = new Spell.Active(SpellSlot.W);
             E = new Spell.Targeted(SpellSlot.E, 320);
             R = new Spell.Active(SpellSlot.R);
 
             Menu = MainMenu.AddMenu("Reverse Olaf", "reverseolaf");
-            Menu.AddGroupLabel("Reverse Olaf 0.1");
+            Menu.AddGroupLabel("Reverse Olaf 0.12");
 
             Menu.AddSeparator();
 
-            Menu.AddLabel("Made By Reverse Flash");
+            Menu.AddLabel("Made By Reverse Flash and MarioGK");
             SettingsMenu = Menu.AddSubMenu("Settings", "Settings");
 
             SettingsMenu.AddGroupLabel("Settings");
@@ -82,12 +94,32 @@ namespace Reverse_Olaf
 
             SettingsMenu.AddLabel("Draw");
             SettingsMenu.Add("drawQ", new CheckBox("Draw Q"));
+            SettingsMenu.Add("drawQpos", new CheckBox("Draw Q Position"));
             SettingsMenu.Add("drawW", new CheckBox("Draw W"));
             SettingsMenu.Add("drawE", new CheckBox("Draw E"));
             SettingsMenu.Add("drawR", new CheckBox("Draw R"));
 
             Game.OnTick += Game_OnTick;
             Drawing.OnDraw += Drawing_OnDraw;
+            GameObject.OnCreate += GameObject_OnCreate;
+            GameObject.OnDelete += GameObject_OnDelete;
+        }
+        private static void GameObject_OnCreate(GameObject obj, EventArgs args)
+        {
+            if (obj.Name == "olaf_axe_totem_team_id_green.troy")
+            {
+                olafAxe.Object = obj;
+                olafAxe.ExpireTime = Game.Time + 8;
+                olafAxe.NetworkId = obj.NetworkId;
+                olafAxe.AxePos = obj.Position;
+            }
+        }
+        private static void GameObject_OnDelete(GameObject obj, EventArgs args)
+        {
+            if (obj.Name == "olaf_axe_totem_team_id_green.troy")
+            {
+                olafAxe.Object = null;
+            }
         }
         private static void Game_OnTick(EventArgs args)
         {
@@ -150,9 +182,7 @@ namespace Reverse_Olaf
             var useE = SettingsMenu["ECombo"].Cast<CheckBox>().CurrentValue;
             var useR = SettingsMenu["RCombo"].Cast<CheckBox>().CurrentValue;
 
-            Q.AllowedCollisionCount = int.MaxValue;
-
-            if (useQ && Q.IsReady() && target.IsValidTarget(Q.Range -20) && !target.IsDead && !target.IsZombie && Q.GetPrediction(target).HitChance >= HitChance.High)
+            if (useQ && Q.IsReady() && target.IsValidTarget(Q.Range) && !target.IsDead && !target.IsZombie)
             {
                 Q.Cast(target);
             }
@@ -219,7 +249,7 @@ namespace Reverse_Olaf
                 {
                     Q.Cast(minion);
                 }
-                if (useW && W.IsReady() && Player.Instance.ManaPercent > Wmana && minion.IsValidTarget(_Player.AttackRange + 20))
+                if (useW && W.IsReady() && Player.Instance.ManaPercent > Wmana && minion.IsValidTarget(_Player.AttackRange))
                 {
                     W.Cast();
                 }
@@ -249,21 +279,19 @@ namespace Reverse_Olaf
         }
         private static void Drawing_OnDraw(EventArgs args)
         {
+            var drawAxePosition = SettingsMenu["drawQpos"].Cast<CheckBox>().CurrentValue;
+
+            if (drawAxePosition && olafAxe.Object != null)
+            {
+                new Circle() { Color = Color.Red, BorderWidth = 6, Radius = 85 }.Draw(olafAxe.Object.Position);
+            }
             if (SettingsMenu["drawQ"].Cast<CheckBox>().CurrentValue)
             {
                 new Circle() { Color = Color.Yellow, BorderWidth = 1, Radius = Q.Range }.Draw(_Player.Position);
             }
-            if (SettingsMenu["drawW"].Cast<CheckBox>().CurrentValue)
-            {
-                new Circle() { Color = Color.Blue, BorderWidth = 1, Radius = W.Range }.Draw(_Player.Position);
-            }
             if (SettingsMenu["drawE"].Cast<CheckBox>().CurrentValue)
             {
-                new Circle() { Color = Color.Red, BorderWidth = 1, Radius = E.Range }.Draw(_Player.Position);
-            }
-            if (SettingsMenu["drawR"].Cast<CheckBox>().CurrentValue)
-            {
-                new Circle() { Color = Color.Purple, BorderWidth = 1, Radius = R.Range }.Draw(_Player.Position);
+                new Circle() { Color = Color.Green, BorderWidth = 1, Radius = E.Range }.Draw(_Player.Position);
             }
         }
     }
