@@ -144,7 +144,7 @@ namespace Reverse_Talon
                     R.Cast();
                 }
             }
-            if (!target.IsValidTarget(E.Range))
+            else if (!target.IsValidTarget(E.Range))
             {
                 if (useR && R.IsReady() && target.IsValidTarget(R.Range) && !target.IsZombie)
                 {
@@ -186,10 +186,11 @@ namespace Reverse_Talon
             var useQ = SettingsMenu["QHarass"].Cast<CheckBox>().CurrentValue;
             var useW = SettingsMenu["WHarass"].Cast<CheckBox>().CurrentValue;
             var useE = SettingsMenu["EHarass"].Cast<CheckBox>().CurrentValue;
+            
 
             if (Q.IsReady() && useQ && target.IsValidTarget(E.Range) && !target.IsZombie)
             {
-                Q.Cast(target);
+                Q.Cast();
             }
             if (E.IsReady() && useE && target.IsValidTarget(E.Range) && !target.IsZombie)
             {
@@ -197,7 +198,7 @@ namespace Reverse_Talon
             }
             if (W.IsReady() && useW && target.IsValidTarget(W.Range) && !target.IsZombie)
             {
-                W.Cast();
+                W.Cast(target);
             }
         }
         private static void LaneClear()
@@ -220,8 +221,8 @@ namespace Reverse_Talon
                 || Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.LaneClear))
             {
                 var t = target as Obj_AI_Base;
-                var useQ = SettingsMenu["QLaneClear"].Cast<CheckBox>().CurrentValue;
-                var Qmana = SettingsMenu["QlaneclearMana"].Cast<Slider>().CurrentValue;
+                var useQ = SettingsMenu["Qlasthit"].Cast<CheckBox>().CurrentValue;
+                var Qmana = SettingsMenu["QlasthitMana"].Cast<Slider>().CurrentValue;
 
                 if (t != null)
                 { 
@@ -235,7 +236,7 @@ namespace Reverse_Talon
         private static void LastHit()
         {
             var useW = SettingsMenu["Wlasthit"].Cast<CheckBox>().CurrentValue;
-            var Wmana = SettingsMenu["WlastHit"].Cast<Slider>().CurrentValue;
+            var Wmana = SettingsMenu["WlasthitMana"].Cast<Slider>().CurrentValue;
             var minions = ObjectManager.Get<Obj_AI_Base>().OrderBy(m => m.Health).Where(m => m.IsMinion && m.IsEnemy && !m.IsDead);
             foreach (var minion in minions)
             {
