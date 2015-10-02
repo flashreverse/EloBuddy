@@ -81,7 +81,7 @@ namespace Reverse_Talon
             SettingsMenu.Add("WlaneclearMana", new Slider("Mana % To Use W", 30, 0, 100));
 
             SettingsMenu.AddLabel("KillSteal");
-            SettingsMenu.Add("EWkill", new CheckBox("Use EW KillSteal"));
+            SettingsMenu.Add("Wkill", new CheckBox("Use EW KillSteal"));
 
             SettingsMenu.AddLabel("Draw");
             SettingsMenu.Add("drawW", new CheckBox("Draw W"));
@@ -116,6 +116,7 @@ namespace Reverse_Talon
         private static void Combo()
         {
             var target = TargetSelector.GetTarget(1000, DamageType.Physical);
+            if (target == null) return;
             var useQ = SettingsMenu["QCombo"].Cast<CheckBox>().CurrentValue;
             var useW = SettingsMenu["WCombo"].Cast<CheckBox>().CurrentValue;
             var useE = SettingsMenu["ECombo"].Cast<CheckBox>().CurrentValue;
@@ -172,17 +173,18 @@ namespace Reverse_Talon
         private static void KillSteal()
         {
             var target = TargetSelector.GetTarget(E.Range, DamageType.Physical);
-            var useEW = SettingsMenu["EWkill"].Cast<CheckBox>().CurrentValue;
+            if (target == null) return;
+            var useW = SettingsMenu["Wkill"].Cast<CheckBox>().CurrentValue;
 
-            if (E.IsReady() && W.IsReady() && useEW && target.IsValidTarget(E.Range) && !target.IsZombie && target.Health <= _Player.GetSpellDamage(target, SpellSlot.W))
+            if (W.IsReady() && useW && target.IsValidTarget(W.Range) && !target.IsZombie && target.Health <= _Player.GetSpellDamage(target, SpellSlot.W))
             {
-                E.Cast(target);
                 W.Cast(target);
             }
         }
         private static void Harass()
         {
             var target = TargetSelector.GetTarget(E.Range, DamageType.Physical);
+            if (target == null) return;
             var useQ = SettingsMenu["QHarass"].Cast<CheckBox>().CurrentValue;
             var useW = SettingsMenu["WHarass"].Cast<CheckBox>().CurrentValue;
             var useE = SettingsMenu["EHarass"].Cast<CheckBox>().CurrentValue;
