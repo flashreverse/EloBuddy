@@ -115,7 +115,7 @@ namespace Reverse_Talon
         }
         private static void Combo()
         {
-            var target = TargetSelector.GetTarget(E.Range, DamageType.Physical);
+            var target = TargetSelector.GetTarget(1000, DamageType.Physical);
             var useQ = SettingsMenu["QCombo"].Cast<CheckBox>().CurrentValue;
             var useW = SettingsMenu["WCombo"].Cast<CheckBox>().CurrentValue;
             var useE = SettingsMenu["ECombo"].Cast<CheckBox>().CurrentValue;
@@ -146,7 +146,7 @@ namespace Reverse_Talon
             }
             else if (!target.IsValidTarget(E.Range))
             {
-                if (useR && R.IsReady() && target.IsValidTarget(R.Range) && !target.IsZombie)
+                if (useR && R.IsReady() && !target.IsZombie)
                 {
                     R.Cast();
                 }
