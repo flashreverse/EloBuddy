@@ -45,7 +45,7 @@ namespace Reverse_Fiora
             R = new Spell.Targeted(SpellSlot.R, 550);
 
             Menu = MainMenu.AddMenu("Reverse Fiora", "reversefiora");
-            Menu.AddGroupLabel("Reverse Fiora V0.2");
+            Menu.AddGroupLabel("Reverse Fiora V1.0");
             Menu.AddSeparator();
             Menu.AddLabel("Made By Reverse Flash");
 
