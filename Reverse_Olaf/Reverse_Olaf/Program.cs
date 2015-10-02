@@ -92,6 +92,9 @@ namespace Reverse_Olaf
             SettingsMenu.Add("Qkill", new CheckBox("Use Q KillSteal"));
             SettingsMenu.Add("Ekill", new CheckBox("Use E KillSteal"));
 
+            SettingsMenu.Add("autoE", new CheckBox("Use Auto E"));
+            SettingsMenu.Add("autoR", new CheckBox("Use Auto R"));
+
             SettingsMenu.AddLabel("Draw");
             SettingsMenu.Add("drawQ", new CheckBox("Draw Q"));
             SettingsMenu.Add("drawQpos", new CheckBox("Draw Q Position"));
@@ -140,6 +143,8 @@ namespace Reverse_Olaf
                 LastHit();
             }
             KillSteal();
+            autoE();
+            autoR();
         }
         private static void Combo()
         {
@@ -242,6 +247,31 @@ namespace Reverse_Olaf
                 {
                     E.Cast(minion);
                 }
+            }
+        }
+        private static void autoE()
+        {
+            var target = TargetSelector.GetTarget(E.Range, DamageType.True);
+            var useE = SettingsMenu["autoE"].Cast<CheckBox>().CurrentValue;
+
+            if(useE && E.IsReady() && target.IsValidTarget(E.Range))
+            {
+                E.Cast(target);
+            }
+        }
+        private static void autoR()
+        {
+            var useR = SettingsMenu["autoR"].Cast<CheckBox>().CurrentValue;
+
+            if (useR && R.IsReady() && _Player.HasBuffOfType(BuffType.Stun)
+            || _Player.HasBuffOfType(BuffType.Fear) 
+            || _Player.HasBuffOfType(BuffType.Charm) 
+            || _Player.HasBuffOfType(BuffType.Silence) 
+            || _Player.HasBuffOfType(BuffType.Snare) 
+            || _Player.HasBuffOfType(BuffType.Taunt)
+            || _Player.HasBuffOfType(BuffType.Suppression))
+            {
+                R.Cast();
             }
         }
         private static void Drawing_OnDraw(EventArgs args)
