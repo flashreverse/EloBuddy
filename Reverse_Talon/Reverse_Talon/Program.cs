@@ -115,7 +115,7 @@ namespace Reverse_Talon
         }
         private static void Combo()
         {
-            var target = TargetSelector.GetTarget(1000, DamageType.Physical);
+            var target = TargetSelector.GetTarget(1300, DamageType.Physical);
             if (target == null) return;
             var useQ = SettingsMenu["QCombo"].Cast<CheckBox>().CurrentValue;
             var useW = SettingsMenu["WCombo"].Cast<CheckBox>().CurrentValue;
