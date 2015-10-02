@@ -8,7 +8,6 @@ using EloBuddy.SDK.Menu;
 using EloBuddy.SDK.Menu.Values;
 using EloBuddy.SDK.Rendering;
 using Color = System.Drawing.Color;
-using SharpDX;
 
 
 namespace Reverse_Fiora
@@ -20,11 +19,11 @@ namespace Reverse_Fiora
         public static Spell.Active E;
         public static Spell.Targeted R;
         public static Menu Menu, SkillMenu, FarmingMenu, MiscMenu, DrawMenu;
-        public static HitChance MinimumHitChance { get; set; }
 
         static void Main(string[] args)
         {
             Loading.OnLoadingComplete += Loading_OnLoadingComplete;
+            Bootstrap.Init(null);
         }
 
         public static AIHeroClient _Player
@@ -37,29 +36,20 @@ namespace Reverse_Fiora
             if (Player.Instance.ChampionName != "Fiora")
                 return;
 
-            Bootstrap.Init(null);
-
-            uint level = (uint)Player.Instance.Level;
-            Q = new Spell.Skillshot(SpellSlot.Q, 400, SkillShotType.Linear, 250, int.MaxValue)
-            {
-                AllowedCollisionCount = int.MaxValue, 
-                MinimumHitChance = HitChance.High
-            };
+            Q = new Spell.Skillshot(SpellSlot.Q, 400, SkillShotType.Circular, 250, int.MaxValue);
             W = new Spell.Skillshot(SpellSlot.W, 750, SkillShotType.Linear, 250, int.MaxValue)
             {
-                AllowedCollisionCount = int.MaxValue, 
                 MinimumHitChance = HitChance.High
             };
             E = new Spell.Active(SpellSlot.E, 200);
             R = new Spell.Targeted(SpellSlot.R, 550);
 
             Menu = MainMenu.AddMenu("Reverse Fiora", "reversefiora");
-            Menu.AddGroupLabel("Reverse Fiora V0.1");
+            Menu.AddGroupLabel("Reverse Fiora V0.2");
             Menu.AddSeparator();
             Menu.AddLabel("Made By Reverse Flash");
 
             SkillMenu = Menu.AddSubMenu("Skills", "Skills");
-
             SkillMenu.AddGroupLabel("Skills");
             SkillMenu.AddLabel("Combo");
             SkillMenu.Add("QCombo", new CheckBox("Use Q on Combo"));
@@ -72,15 +62,17 @@ namespace Reverse_Fiora
             SkillMenu.Add("WHarass", new CheckBox("Use W on Harass"));
             SkillMenu.Add("EHarass", new CheckBox("Use E on Harass"));
 
+            FarmingMenu = Menu.AddSubMenu("Farming", "Farming");
+            FarmingMenu.AddGroupLabel("Farming");
             FarmingMenu.AddLabel("LastHit");
             FarmingMenu.Add("Qlasthit", new CheckBox("Use Q on LastHit"));
-            FarmingMenu.Add("QlasthitMana", new Slider("Mana % To Use Q", 30, 0, 100));
+            FarmingMenu.Add("QlasthitMana", new Slider("Mana % To Use Q", 30));
 
             FarmingMenu.AddLabel("LaneClear");
             FarmingMenu.Add("QLaneClear", new CheckBox("Use Q on LaneClear"));
-            FarmingMenu.Add("QlaneclearMana", new Slider("Mana % To Use Q", 30, 0, 100));
+            FarmingMenu.Add("QlaneclearMana", new Slider("Mana % To Use Q", 30));
             FarmingMenu.Add("ELaneClear", new CheckBox("Use E on LaneClear"));
-            FarmingMenu.Add("ElaneclearMana", new Slider("Mana % To Use E", 30, 0, 100));
+            FarmingMenu.Add("ElaneclearMana", new Slider("Mana % To Use E", 30));
 
             MiscMenu = Menu.AddSubMenu("Misc", "Misc");
             MiscMenu.AddGroupLabel("Misc");
