@@ -249,7 +249,7 @@ namespace Reverse_Talon
                 var hydra = new Item((int)ItemId.Ravenous_Hydra_Melee_Only);
                 var youmuus = new Item((int)ItemId.Youmuus_Ghostblade);
 
-                if (hydra.IsOwned() && hydra.IsReady() && youmuus.IsOwned() && youmuus.IsReady())
+                if (hydra.IsOwned() && hydra.IsReady() || youmuus.IsOwned() && youmuus.IsReady())
                 {
                     hydra.Cast();
                     youmuus.Cast();
