@@ -36,7 +36,7 @@ namespace Reverse_Fiora
             if (Player.Instance.ChampionName != "Fiora")
                 return;
 
-            Q = new Spell.Skillshot(SpellSlot.Q, 550, SkillShotType.Circular, 250, int.MaxValue);
+            Q = new Spell.Skillshot(SpellSlot.Q, 600, SkillShotType.Circular, 250, int.MaxValue);
             W = new Spell.Skillshot(SpellSlot.W, 750, SkillShotType.Linear, 250, int.MaxValue)
             {
                 MinimumHitChance = HitChance.High
@@ -45,7 +45,7 @@ namespace Reverse_Fiora
             R = new Spell.Targeted(SpellSlot.R, 550);
 
             Menu = MainMenu.AddMenu("Reverse Fiora", "reversefiora");
-            Menu.AddGroupLabel("Reverse Fiora V1.1");
+            Menu.AddGroupLabel("Reverse Fiora V1.2");
             Menu.AddSeparator();
             Menu.AddLabel("Made By Reverse Flash");
 
