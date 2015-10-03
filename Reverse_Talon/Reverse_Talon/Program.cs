@@ -95,6 +95,8 @@ namespace Reverse_Talon
 
             Game.OnTick += Game_OnTick;
             Drawing.OnDraw += Drawing_OnDraw;
+            Orbwalker.OnPreAttack += Orbwalker_OnPreAttack;
+            Orbwalker.OnPostAttack += Orbwalker_OnPostAttack;
 
             Chat.Print("Reverse Talon loaded :)", System.Drawing.Color.White);
         }
@@ -120,7 +122,7 @@ namespace Reverse_Talon
         }
         private static void Combo()
         {
-            var target = TargetSelector.GetTarget(1300, DamageType.Physical);
+            var target = TargetSelector.GetTarget(1000, DamageType.Physical);
             if (target == null) return;
             var useQ = SkillMenu["QCombo"].Cast<CheckBox>().CurrentValue;
             var useW = SkillMenu["WCombo"].Cast<CheckBox>().CurrentValue;
@@ -179,7 +181,7 @@ namespace Reverse_Talon
         {
             var target = TargetSelector.GetTarget(E.Range, DamageType.Physical);
             if (target == null) return;
-            var useW = SkillMenu["Wkill"].Cast<CheckBox>().CurrentValue;
+            var useW = MiscMenu["Wkill"].Cast<CheckBox>().CurrentValue;
 
             if (W.IsReady() && useW && target.IsValidTarget(W.Range) && !target.IsZombie && target.Health <= _Player.GetSpellDamage(target, SpellSlot.W))
             {
