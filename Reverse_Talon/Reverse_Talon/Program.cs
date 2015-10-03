@@ -49,7 +49,7 @@ namespace Reverse_Talon
             R = new Spell.Active(SpellSlot.R, 500);
 
             Menu = MainMenu.AddMenu("Reverse Talon", "reversetalon");
-            Menu.AddGroupLabel("Reverse Talon V1.0");
+            Menu.AddGroupLabel("Reverse Talon V1.1");
 
             Menu.AddSeparator();
 
