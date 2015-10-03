@@ -36,7 +36,7 @@ namespace Reverse_Fiora
             if (Player.Instance.ChampionName != "Fiora")
                 return;
 
-            Q = new Spell.Skillshot(SpellSlot.Q, 400, SkillShotType.Circular, 250, int.MaxValue);
+            Q = new Spell.Skillshot(SpellSlot.Q, 500, SkillShotType.Circular, 250, int.MaxValue);
             W = new Spell.Skillshot(SpellSlot.W, 750, SkillShotType.Linear, 250, int.MaxValue)
             {
                 MinimumHitChance = HitChance.High
