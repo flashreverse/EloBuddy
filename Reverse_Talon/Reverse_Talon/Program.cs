@@ -240,6 +240,20 @@ namespace Reverse_Talon
                 }
             }
         }
+        static void Orbwalker_OnPostAttack(AttackableUnit target, EventArgs args)
+        {
+            if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Combo))
+            {
+                var hydra = new Item((int)ItemId.Ravenous_Hydra_Melee_Only);
+                var youmuu = new Item((int)ItemId.Youmuus_Ghostblade);
+
+                if (hydra.IsOwned() && hydra.IsReady() && youmuu.IsOwned() && youmuu.IsReady())
+                {
+                    hydra.Cast();
+                    youmuu.Cast();
+                }
+            }
+        }
         private static void LastHit()
         {
             var useW = FarmingMenu["Wlasthit"].Cast<CheckBox>().CurrentValue;
