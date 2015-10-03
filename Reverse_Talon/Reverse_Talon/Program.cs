@@ -130,7 +130,8 @@ namespace Reverse_Talon
             var useR = SkillMenu["RCombo"].Cast<CheckBox>().CurrentValue;
             
             if (target.IsValidTarget(E.Range))
-            {   
+            {
+                var hydra = new Item((int)ItemId.Ravenous_Hydra_Melee_Only);
                 if (useQ && Q.IsReady() && target.IsValidTarget(E.Range) && !target.IsZombie)
                 {
                     Q.Cast();
@@ -138,6 +139,7 @@ namespace Reverse_Talon
                 if (E.IsReady() && useE && target.IsValidTarget(E.Range) && !target.IsZombie)
                 {
                     E.Cast(target);
+                    hydra.Cast();
                 }
                 if (R.IsReady() && useR && target.IsValidTarget(E.Range) && !target.IsZombie)
                 {
@@ -154,6 +156,7 @@ namespace Reverse_Talon
             }
             else if (!target.IsValidTarget(E.Range))
             {
+                var hydra = new Item((int)ItemId.Ravenous_Hydra_Melee_Only);
                 if (useR && R.IsReady() && !target.IsZombie)
                 {
                     R.Cast();
@@ -165,6 +168,7 @@ namespace Reverse_Talon
                 if (E.IsReady() && useE && target.IsValidTarget(E.Range) && !target.IsZombie)
                 {
                     E.Cast(target);
+                    hydra.Cast();
                 }
                 if (W.IsReady() && useW && target.IsValidTarget(W.Range) && !target.IsZombie)
                 {
