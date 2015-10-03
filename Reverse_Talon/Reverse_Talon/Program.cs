@@ -19,7 +19,7 @@ namespace Reverse_Talon
         public static Spell.Skillshot W;
         public static Spell.Targeted E;
         public static Spell.Active R;
-        public static Menu Menu, SettingsMenu;
+        public static Menu Menu, SkillMenu, FarmingMenu, MiscMenu, DrawMenu;
         public static HitChance MinimumHitChance { get; set; }
 
         static void Main(string[] args)
@@ -49,49 +49,54 @@ namespace Reverse_Talon
             R = new Spell.Active(SpellSlot.R, 500);
 
             Menu = MainMenu.AddMenu("Reverse Talon", "reversetalon");
-            Menu.AddGroupLabel("Reverse Talon V0.1");
+            Menu.AddGroupLabel("Reverse Talon V1.0");
 
             Menu.AddSeparator();
 
             Menu.AddLabel("Made By Reverse Flash");
-            SettingsMenu = Menu.AddSubMenu("Settings", "Settings");
+            SkillMenu = Menu.AddSubMenu("Skills", "Skills");
+            SkillMenu.AddGroupLabel("Skills");
+            SkillMenu.AddLabel("Combo");
+            SkillMenu.Add("QCombo", new CheckBox("Use Q on Combo"));
+            SkillMenu.Add("WCombo", new CheckBox("Use W on Combo"));
+            SkillMenu.Add("ECombo", new CheckBox("Use E on Combo"));
+            SkillMenu.Add("RCombo", new CheckBox("Use R on Combo"));
 
-            SettingsMenu.AddGroupLabel("Settings");
-            SettingsMenu.AddLabel("Combo");
-            SettingsMenu.Add("QCombo", new CheckBox("Use Q on Combo"));
-            SettingsMenu.Add("WCombo", new CheckBox("Use W on Combo"));
-            SettingsMenu.Add("ECombo", new CheckBox("Use E on Combo"));
-            SettingsMenu.Add("RCombo", new CheckBox("Use R on Combo"));
+            SkillMenu.AddLabel("Harass");
+            SkillMenu.Add("QHarass", new CheckBox("Use Q on Harass"));
+            SkillMenu.Add("WHarass", new CheckBox("Use W on Harass"));
+            SkillMenu.Add("EHarass", new CheckBox("Use E on Harass"));
 
-            SettingsMenu.AddLabel("Harass");
-            SettingsMenu.Add("QHarass", new CheckBox("Use Q on Harass"));
-            SettingsMenu.Add("WHarass", new CheckBox("Use W on Harass"));
-            SettingsMenu.Add("EHarass", new CheckBox("Use E on Harass"));
+            FarmingMenu = Menu.AddSubMenu("Farming", "Farming");
+            FarmingMenu.AddGroupLabel("Farming");
+            FarmingMenu.AddLabel("LastHit");
+            FarmingMenu.Add("Qlasthit", new CheckBox("Use Q on LastHit"));
+            FarmingMenu.Add("QlasthitMana", new Slider("Mana % To Use Q", 30, 0, 100));
+            FarmingMenu.Add("Wlasthit", new CheckBox("Use W on LastHit"));
+            FarmingMenu.Add("WlasthitMana", new Slider("Mana % To Use W", 30, 0, 100));
 
-            SettingsMenu.AddLabel("LastHit");
-            SettingsMenu.Add("Qlasthit", new CheckBox("Use Q on LastHit"));
-            SettingsMenu.Add("QlasthitMana", new Slider("Mana % To Use Q", 30, 0, 100));
-            SettingsMenu.Add("Wlasthit", new CheckBox("Use W on LastHit"));
-            SettingsMenu.Add("WlasthitMana", new Slider("Mana % To Use W", 30, 0, 100));
+            FarmingMenu.AddLabel("LaneClear");
+            FarmingMenu.Add("QLaneClear", new CheckBox("Use Q on LaneClear"));
+            FarmingMenu.Add("QlaneclearMana", new Slider("Mana % To Use Q", 30, 0, 100));
+            FarmingMenu.Add("WLaneClear", new CheckBox("Use W on LaneClear"));
+            FarmingMenu.Add("WlaneclearMana", new Slider("Mana % To Use W", 30, 0, 100));
 
-            SettingsMenu.AddLabel("LaneClear");
-            SettingsMenu.Add("QLaneClear", new CheckBox("Use Q on LaneClear"));
-            SettingsMenu.Add("QlaneclearMana", new Slider("Mana % To Use Q", 30, 0, 100));
-            SettingsMenu.Add("WLaneClear", new CheckBox("Use W on LaneClear"));
-            SettingsMenu.Add("WlaneclearMana", new Slider("Mana % To Use W", 30, 0, 100));
+            MiscMenu = Menu.AddSubMenu("Misc", "Misc");
+            MiscMenu.AddGroupLabel("Misc");
+            MiscMenu.AddLabel("KillSteal");
+            MiscMenu.Add("Wkill", new CheckBox("Use W KillSteal"));
 
-            SettingsMenu.AddLabel("KillSteal");
-            SettingsMenu.Add("Wkill", new CheckBox("Use EW KillSteal"));
-
-            SettingsMenu.AddLabel("Draw");
-            SettingsMenu.Add("drawW", new CheckBox("Draw W"));
-            SettingsMenu.Add("drawE", new CheckBox("Draw E"));
-            SettingsMenu.Add("drawR", new CheckBox("Draw R"));
+            DrawMenu = Menu.AddSubMenu("Drawings", "Drawings");
+            DrawMenu.AddGroupLabel("Drawings");
+            DrawMenu.AddLabel("Drawings");
+            DrawMenu.Add("drawW", new CheckBox("Draw W"));
+            DrawMenu.Add("drawE", new CheckBox("Draw E"));
+            DrawMenu.Add("drawR", new CheckBox("Draw R"));
 
             Game.OnTick += Game_OnTick;
             Drawing.OnDraw += Drawing_OnDraw;
 
-            Chat.Print("Reverse Talon loaded :)", System.Drawing.Color.DarkRed);
+            Chat.Print("Reverse Talon loaded :)", System.Drawing.Color.White);
         }
         private static void Game_OnTick(EventArgs args)
         {
@@ -117,10 +122,10 @@ namespace Reverse_Talon
         {
             var target = TargetSelector.GetTarget(1300, DamageType.Physical);
             if (target == null) return;
-            var useQ = SettingsMenu["QCombo"].Cast<CheckBox>().CurrentValue;
-            var useW = SettingsMenu["WCombo"].Cast<CheckBox>().CurrentValue;
-            var useE = SettingsMenu["ECombo"].Cast<CheckBox>().CurrentValue;
-            var useR = SettingsMenu["RCombo"].Cast<CheckBox>().CurrentValue;
+            var useQ = SkillMenu["QCombo"].Cast<CheckBox>().CurrentValue;
+            var useW = SkillMenu["WCombo"].Cast<CheckBox>().CurrentValue;
+            var useE = SkillMenu["ECombo"].Cast<CheckBox>().CurrentValue;
+            var useR = SkillMenu["RCombo"].Cast<CheckBox>().CurrentValue;
             
             if (target.IsValidTarget(E.Range))
             {   
@@ -174,7 +179,7 @@ namespace Reverse_Talon
         {
             var target = TargetSelector.GetTarget(E.Range, DamageType.Physical);
             if (target == null) return;
-            var useW = SettingsMenu["Wkill"].Cast<CheckBox>().CurrentValue;
+            var useW = SkillMenu["Wkill"].Cast<CheckBox>().CurrentValue;
 
             if (W.IsReady() && useW && target.IsValidTarget(W.Range) && !target.IsZombie && target.Health <= _Player.GetSpellDamage(target, SpellSlot.W))
             {
@@ -185,9 +190,9 @@ namespace Reverse_Talon
         {
             var target = TargetSelector.GetTarget(E.Range, DamageType.Physical);
             if (target == null) return;
-            var useQ = SettingsMenu["QHarass"].Cast<CheckBox>().CurrentValue;
-            var useW = SettingsMenu["WHarass"].Cast<CheckBox>().CurrentValue;
-            var useE = SettingsMenu["EHarass"].Cast<CheckBox>().CurrentValue;
+            var useQ = SkillMenu["QHarass"].Cast<CheckBox>().CurrentValue;
+            var useW = SkillMenu["WHarass"].Cast<CheckBox>().CurrentValue;
+            var useE = SkillMenu["EHarass"].Cast<CheckBox>().CurrentValue;
             
 
             if (Q.IsReady() && useQ && target.IsValidTarget(E.Range) && !target.IsZombie)
@@ -205,8 +210,8 @@ namespace Reverse_Talon
         }
         private static void LaneClear()
         {
-            var useW = SettingsMenu["WLaneClear"].Cast<CheckBox>().CurrentValue;
-            var Wmana = SettingsMenu["WlaneclearMana"].Cast<Slider>().CurrentValue;
+            var useW = FarmingMenu["WLaneClear"].Cast<CheckBox>().CurrentValue;
+            var Wmana = FarmingMenu["WlaneclearMana"].Cast<Slider>().CurrentValue;
             var minions = ObjectManager.Get<Obj_AI_Base>().OrderBy(m => m.Health).Where(m => m.IsMinion && m.IsEnemy && !m.IsDead);
             foreach (var minion in minions)
             {
@@ -223,8 +228,8 @@ namespace Reverse_Talon
                 || Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.LaneClear))
             {
                 var t = target as Obj_AI_Base;
-                var useQ = SettingsMenu["Qlasthit"].Cast<CheckBox>().CurrentValue;
-                var Qmana = SettingsMenu["QlasthitMana"].Cast<Slider>().CurrentValue;
+                var useQ = FarmingMenu["Qlasthit"].Cast<CheckBox>().CurrentValue;
+                var Qmana = FarmingMenu["QlasthitMana"].Cast<Slider>().CurrentValue;
 
                 if (t != null)
                 { 
@@ -237,8 +242,8 @@ namespace Reverse_Talon
         }
         private static void LastHit()
         {
-            var useW = SettingsMenu["Wlasthit"].Cast<CheckBox>().CurrentValue;
-            var Wmana = SettingsMenu["WlasthitMana"].Cast<Slider>().CurrentValue;
+            var useW = FarmingMenu["Wlasthit"].Cast<CheckBox>().CurrentValue;
+            var Wmana = FarmingMenu["WlasthitMana"].Cast<Slider>().CurrentValue;
             var minions = ObjectManager.Get<Obj_AI_Base>().OrderBy(m => m.Health).Where(m => m.IsMinion && m.IsEnemy && !m.IsDead);
             foreach (var minion in minions)
             {
@@ -250,17 +255,17 @@ namespace Reverse_Talon
         }
         private static void Drawing_OnDraw(EventArgs args)
         {
-            if (SettingsMenu["drawW"].Cast<CheckBox>().CurrentValue)
+            if (DrawMenu["drawW"].Cast<CheckBox>().CurrentValue)
             {
-                new Circle() { Color = Color.Yellow, BorderWidth = 1, Radius = W.Range }.Draw(_Player.Position);
+                new Circle() { Color = Color.Green, BorderWidth = 1, Radius = W.Range }.Draw(_Player.Position);
             }
-            if (SettingsMenu["drawE"].Cast<CheckBox>().CurrentValue)
+            if (DrawMenu["drawE"].Cast<CheckBox>().CurrentValue)
             {
-                new Circle() { Color = Color.Green, BorderWidth = 1, Radius = E.Range }.Draw(_Player.Position);
+                new Circle() { Color = Color.Blue, BorderWidth = 1, Radius = E.Range }.Draw(_Player.Position);
             }
-            if (SettingsMenu["drawR"].Cast<CheckBox>().CurrentValue)
+            if (DrawMenu["drawR"].Cast<CheckBox>().CurrentValue)
             {
-                new Circle() { Color = Color.Green, BorderWidth = 1, Radius = R.Range }.Draw(_Player.Position);
+                new Circle() { Color = Color.Red, BorderWidth = 1, Radius = R.Range }.Draw(_Player.Position);
             }
         }
     }
