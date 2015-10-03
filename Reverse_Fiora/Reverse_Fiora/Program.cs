@@ -154,14 +154,14 @@ namespace Reverse_Fiora
         }
         private static void Harass()
         {
-            var target = TargetSelector.GetTarget(E.Range, DamageType.Physical);
+            var target = TargetSelector.GetTarget(Q.Range, DamageType.Physical);
             if (target == null) return;
             var useQ = SkillMenu["QHarass"].Cast<CheckBox>().CurrentValue;
             var useW = SkillMenu["WHarass"].Cast<CheckBox>().CurrentValue;
             var useE = SkillMenu["EHarass"].Cast<CheckBox>().CurrentValue;
 
 
-            if (Q.IsReady() && useQ && target.IsValidTarget(E.Range) && !target.IsZombie)
+            if (Q.IsReady() && useQ && target.IsValidTarget(Q.Range) && !target.IsZombie)
             {
                 Q.Cast(target);
             }
