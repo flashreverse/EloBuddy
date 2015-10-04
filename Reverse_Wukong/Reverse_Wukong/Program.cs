@@ -80,8 +80,6 @@ namespace Reverse_Wukong
             DrawMenu = Menu.AddSubMenu("Drawings", "Drawings");
             DrawMenu.AddGroupLabel("Drawings");
             DrawMenu.AddLabel("Drawings");
-            DrawMenu.Add("drawQ", new CheckBox("Draw Q"));
-            DrawMenu.Add("drawW", new CheckBox("Draw W"));
             DrawMenu.Add("drawE", new CheckBox("Draw E"));
             DrawMenu.Add("drawR", new CheckBox("Draw R"));
 
@@ -89,8 +87,12 @@ namespace Reverse_Wukong
             Drawing.OnDraw += Drawing_OnDraw;
             Orbwalker.OnPreAttack += Orbwalker_OnPreAttack;
 
+<<<<<<< HEAD
             Chat.Print("Reverse Wukong loaded :)", Color.White);
 
+=======
+            Chat.Print("Reverse Wukong loaded :)", System.Drawing.Color.White);
+>>>>>>> a46fce3a24f39d59e5f86ec9ca063378082ad9a1
         }
         private static void Game_OnTick(EventArgs args)
         {
@@ -191,7 +193,11 @@ namespace Reverse_Wukong
             // Mudei
             if (useQ && Q.IsReady())
             {
+<<<<<<< HEAD
                 foreach (var minion in minions)
+=======
+                if (useQ && Q.IsReady() && minion.IsValidTarget(E.Range) && Player.Instance.ManaPercent > Qmana && minion.Health <= _Player.GetSpellDamage(minion, SpellSlot.Q))
+>>>>>>> a46fce3a24f39d59e5f86ec9ca063378082ad9a1
                 {
                     if (Player.Instance.ManaPercent > Qmana &&
                         minion.Health <= _Player.GetSpellDamage(minion, SpellSlot.Q))
@@ -241,14 +247,6 @@ namespace Reverse_Wukong
         }
         private static void Drawing_OnDraw(EventArgs args)
         {
-            if (DrawMenu["drawQ"].Cast<CheckBox>().CurrentValue)
-            {
-                new Circle() { Color = Color.Red, BorderWidth = 1, Radius = Q.Range }.Draw(_Player.Position);
-            }
-            if (DrawMenu["drawW"].Cast<CheckBox>().CurrentValue)
-            {
-                new Circle() { Color = Color.Green, BorderWidth = 1, Radius = W.Range }.Draw(_Player.Position);
-            }
             if (DrawMenu["drawE"].Cast<CheckBox>().CurrentValue)
             {
                 new Circle() { Color = Color.Yellow, BorderWidth = 1, Radius = E.Range }.Draw(_Player.Position);
