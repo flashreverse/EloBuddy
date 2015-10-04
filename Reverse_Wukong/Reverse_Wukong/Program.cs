@@ -80,8 +80,6 @@ namespace Reverse_Wukong
             DrawMenu = Menu.AddSubMenu("Drawings", "Drawings");
             DrawMenu.AddGroupLabel("Drawings");
             DrawMenu.AddLabel("Drawings");
-            DrawMenu.Add("drawQ", new CheckBox("Draw Q"));
-            DrawMenu.Add("drawW", new CheckBox("Draw W"));
             DrawMenu.Add("drawE", new CheckBox("Draw E"));
             DrawMenu.Add("drawR", new CheckBox("Draw R"));
 
@@ -90,7 +88,6 @@ namespace Reverse_Wukong
             Orbwalker.OnPreAttack += Orbwalker_OnPreAttack;
 
             Chat.Print("Reverse Wukong loaded :)", System.Drawing.Color.White);
-
         }
         private static void Game_OnTick(EventArgs args)
         {
@@ -235,14 +232,6 @@ namespace Reverse_Wukong
         }
         private static void Drawing_OnDraw(EventArgs args)
         {
-            if (DrawMenu["drawQ"].Cast<CheckBox>().CurrentValue)
-            {
-                new Circle() { Color = Color.Red, BorderWidth = 1, Radius = Q.Range }.Draw(_Player.Position);
-            }
-            if (DrawMenu["drawW"].Cast<CheckBox>().CurrentValue)
-            {
-                new Circle() { Color = Color.Green, BorderWidth = 1, Radius = W.Range }.Draw(_Player.Position);
-            }
             if (DrawMenu["drawE"].Cast<CheckBox>().CurrentValue)
             {
                 new Circle() { Color = Color.Yellow, BorderWidth = 1, Radius = E.Range }.Draw(_Player.Position);
