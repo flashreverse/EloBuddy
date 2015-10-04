@@ -87,12 +87,7 @@ namespace Reverse_Wukong
             Drawing.OnDraw += Drawing_OnDraw;
             Orbwalker.OnPreAttack += Orbwalker_OnPreAttack;
 
-<<<<<<< HEAD
             Chat.Print("Reverse Wukong loaded :)", Color.White);
-
-=======
-            Chat.Print("Reverse Wukong loaded :)", System.Drawing.Color.White);
->>>>>>> a46fce3a24f39d59e5f86ec9ca063378082ad9a1
         }
         private static void Game_OnTick(EventArgs args)
         {
@@ -107,10 +102,6 @@ namespace Reverse_Wukong
             if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.LaneClear))
             {
                 LaneClear();
-            }
-            if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.LastHit))
-            {
-                LastHit();
             }
             if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Flee))
             {
@@ -193,11 +184,8 @@ namespace Reverse_Wukong
             // Mudei
             if (useQ && Q.IsReady())
             {
-<<<<<<< HEAD
                 foreach (var minion in minions)
-=======
                 if (useQ && Q.IsReady() && minion.IsValidTarget(E.Range) && Player.Instance.ManaPercent > Qmana && minion.Health <= _Player.GetSpellDamage(minion, SpellSlot.Q))
->>>>>>> a46fce3a24f39d59e5f86ec9ca063378082ad9a1
                 {
                     if (Player.Instance.ManaPercent > Qmana &&
                         minion.Health <= _Player.GetSpellDamage(minion, SpellSlot.Q))
@@ -212,23 +200,12 @@ namespace Reverse_Wukong
                     E.Cast(minion);
                 }
         }
-        private static void LastHit()
-        {
-            var useE = FarmingMenu["Elasthit"].Cast<CheckBox>().CurrentValue;
-            var minions = ObjectManager.Get<Obj_AI_Base>().OrderBy(m => m.Health).Where(m => m.IsMinion && m.IsEnemy && !m.IsDead);
-            foreach (var minion in minions)
-            {
-                if (useE && E.IsReady() && minion.Health <= _Player.GetSpellDamage(minion, SpellSlot.E))
-                {
-                    E.Cast(minion);
-                }
-            }
-        }
+
         private static void Flee()
         {
             W.Cast();
         }
-        static void Orbwalker_OnPreAttack(AttackableUnit target, Orbwalker.PreAttackArgs args)
+        private static void Orbwalker_OnPreAttack(AttackableUnit target, Orbwalker.PreAttackArgs args)
         {
             if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.LastHit))
             {
@@ -238,7 +215,7 @@ namespace Reverse_Wukong
 
                 if (t != null)
                 {
-                    if (_Player.GetSpellDamage(t, SpellSlot.Q) >= t.Health && t.IsValidTarget() && Q.IsReady() && Player.Instance.ManaPercent > Qmana)
+                    if (useQ && _Player.GetSpellDamage(t, SpellSlot.Q) >= t.Health && t.IsValidTarget() && Q.IsReady() && Player.Instance.ManaPercent > Qmana)
                     {
                         Q.Cast();
                     }
