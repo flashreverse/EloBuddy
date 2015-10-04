@@ -7,17 +7,17 @@ using EloBuddy.SDK.Events;
 using EloBuddy.SDK.Menu;
 using EloBuddy.SDK.Menu.Values;
 using EloBuddy.SDK.Rendering;
+using SharpDX;
 using Color = System.Drawing.Color;
 
-
-namespace Reverse_Fiora
+namespace Reverse_Wukong
 {
     class Program
     {
-        public static Spell.Skillshot Q;
-        public static Spell.Skillshot W;
-        public static Spell.Active E;
-        public static Spell.Targeted R;
+        public static Spell.Active Q;
+        public static Spell.Active W;
+        public static Spell.Targeted E;
+        public static Spell.Active R;
         public static Menu Menu, SkillMenu, FarmingMenu, MiscMenu, DrawMenu;
 
         static void Main(string[] args)
@@ -33,19 +33,16 @@ namespace Reverse_Fiora
 
         private static void Loading_OnLoadingComplete(EventArgs args)
         {
-            if (Player.Instance.ChampionName != "Fiora")
+            if (Player.Instance.ChampionName != "MonkeyKing")
                 return;
 
-            Q = new Spell.Skillshot(SpellSlot.Q, 600, SkillShotType.Circular, 250, int.MaxValue);
-            W = new Spell.Skillshot(SpellSlot.W, 750, SkillShotType.Linear, 250, int.MaxValue)
-            {
-                MinimumHitChance = HitChance.High
-            };
-            E = new Spell.Active(SpellSlot.E, 200);
-            R = new Spell.Targeted(SpellSlot.R, 550);
+            Q = new Spell.Active(SpellSlot.Q);
+            W = new Spell.Active(SpellSlot.W);
+            E = new Spell.Targeted(SpellSlot.E, 625);
+            R = new Spell.Active(SpellSlot.R);
 
-            Menu = MainMenu.AddMenu("Reverse Fiora", "reversefiora");
-            Menu.AddGroupLabel("Reverse Fiora V1.2");
+            Menu = MainMenu.AddMenu("Reverse Wukong", "reversewukong");
+            Menu.AddGroupLabel("Reverse Wukong V0.1");
             Menu.AddSeparator();
             Menu.AddLabel("Made By Reverse Flash");
 
@@ -66,7 +63,7 @@ namespace Reverse_Fiora
             FarmingMenu.AddGroupLabel("Farming");
             FarmingMenu.AddLabel("LastHit");
             FarmingMenu.Add("Qlasthit", new CheckBox("Use Q on LastHit"));
-            FarmingMenu.Add("QlasthitMana", new Slider("Mana % To Use Q", 30));
+            FarmingMenu.Add("Elasthit", new CheckBox("Use E on LastHit"));
 
             FarmingMenu.AddLabel("LaneClear");
             FarmingMenu.Add("QLaneClear", new CheckBox("Use Q on LaneClear"));
@@ -78,18 +75,21 @@ namespace Reverse_Fiora
             MiscMenu.AddGroupLabel("Misc");
             MiscMenu.AddLabel("KillSteal");
             MiscMenu.Add("Qkill", new CheckBox("Use Q KillSteal"));
+            MiscMenu.Add("Ekill", new CheckBox("Use E KillSteal"));
 
             DrawMenu = Menu.AddSubMenu("Drawings", "Drawings");
             DrawMenu.AddGroupLabel("Drawings");
             DrawMenu.AddLabel("Drawings");
             DrawMenu.Add("drawQ", new CheckBox("Draw Q"));
             DrawMenu.Add("drawW", new CheckBox("Draw W"));
+            DrawMenu.Add("drawE", new CheckBox("Draw E"));
             DrawMenu.Add("drawR", new CheckBox("Draw R"));
 
             Game.OnTick += Game_OnTick;
             Drawing.OnDraw += Drawing_OnDraw;
+            Orbwalker.OnPreAttack += Orbwalker_OnPreAttack;
 
-            Chat.Print("Reverse Fiora loaded :)", System.Drawing.Color.White);            
+            Chat.Print("Reverse Wukong loaded :)", System.Drawing.Color.White);
 
         }
         private static void Game_OnTick(EventArgs args)
@@ -110,56 +110,63 @@ namespace Reverse_Fiora
             {
                 LastHit();
             }
+            if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Flee))
+            {
+                Flee();
+            }
             KillSteal();
         }
         private static void Combo()
         {
-            var target = TargetSelector.GetTarget(W.Range, DamageType.Physical);
+            var target = TargetSelector.GetTarget(E.Range, DamageType.Physical);
             if (target == null) return;
             var useQ = SkillMenu["QCombo"].Cast<CheckBox>().CurrentValue;
-            var useW = SkillMenu["WCombo"].Cast<CheckBox>().CurrentValue;
             var useE = SkillMenu["ECombo"].Cast<CheckBox>().CurrentValue;
             var useR = SkillMenu["RCombo"].Cast<CheckBox>().CurrentValue;
 
-            if (target.IsValidTarget(R.Range))
+            if (target.IsValidTarget(E.Range))
             {
-                if (useQ && Q.IsReady() && target.IsValidTarget(Q.Range) && !target.IsZombie)
+                if (_Player.HasBuff("MonkeyKingSpinToWin"))
                 {
-                    Q.Cast(target);
+                    return;
                 }
                 if (useE && E.IsReady() && target.IsValidTarget(E.Range) && !target.IsZombie)
                 {
-                    E.Cast();
+                    E.Cast(target);
                 }
-                if (useW && W.IsReady() && target.IsValidTarget(W.Range) && !target.IsZombie)
+                if (useQ && Q.IsReady() && target.IsValidTarget(Q.Range) && !target.IsZombie)
                 {
-                    W.Cast(target);
+                    Q.Cast();
                 }
                 if (useR && R.IsReady() && target.IsValidTarget(R.Range) && !target.IsZombie)
                 {
-                    R.Cast(target);
+                    R.Cast();
                 }
             }
         }
         private static void KillSteal()
         {
-            var target = TargetSelector.GetTarget(Q.Range, DamageType.Physical);
+            var target = TargetSelector.GetTarget(E.Range, DamageType.Physical);
             if (target == null) return;
             var useQ = MiscMenu["Qkill"].Cast<CheckBox>().CurrentValue;
+            var useE = MiscMenu["Ekill"].Cast<CheckBox>().CurrentValue;
 
             if (Q.IsReady() && useQ && target.IsValidTarget(Q.Range) && !target.IsZombie && target.Health <= _Player.GetSpellDamage(target, SpellSlot.Q))
             {
-                Q.Cast(target);
+                Q.Cast();
+            }
+            if (E.IsReady() && useE && target.IsValidTarget(E.Range) && !target.IsZombie && target.Health <= _Player.GetSpellDamage(target, SpellSlot.E))
+            {
+                E.Cast(target);
             }
         }
         private static void Harass()
         {
-            var target = TargetSelector.GetTarget(Q.Range, DamageType.Physical);
+            var target = TargetSelector.GetTarget(E.Range, DamageType.Physical);
             if (target == null) return;
             var useQ = SkillMenu["QHarass"].Cast<CheckBox>().CurrentValue;
             var useW = SkillMenu["WHarass"].Cast<CheckBox>().CurrentValue;
             var useE = SkillMenu["EHarass"].Cast<CheckBox>().CurrentValue;
-
 
             if (Q.IsReady() && useQ && target.IsValidTarget(Q.Range) && !target.IsZombie)
             {
@@ -185,36 +192,44 @@ namespace Reverse_Fiora
             {
                 if (useQ && Q.IsReady() && Player.Instance.ManaPercent > Qmana && minion.Health <= _Player.GetSpellDamage(minion, SpellSlot.Q))
                 {
-                    Q.Cast(minion);
+                    Q.Cast();
                 }
-                if (useE && E.IsReady() && minion.IsValidTarget(180) && Player.Instance.ManaPercent > Emana)
+                if (useE && E.IsReady() && minion.IsValidTarget(E.Range) && Player.Instance.ManaPercent > Emana)
                 {
-                    E.Cast();
+                    E.Cast(minion);
                 }
             }
         }
         private static void LastHit()
         {
-            var useQ = FarmingMenu["Qlasthit"].Cast<CheckBox>().CurrentValue;
-            var Qmana = FarmingMenu["QlasthitMana"].Cast<Slider>().CurrentValue;
+            var useE = FarmingMenu["Elasthit"].Cast<CheckBox>().CurrentValue;
             var minions = ObjectManager.Get<Obj_AI_Base>().OrderBy(m => m.Health).Where(m => m.IsMinion && m.IsEnemy && !m.IsDead);
             foreach (var minion in minions)
             {
-                if (useQ && Q.IsReady() && minion.Health <= _Player.GetSpellDamage(minion, SpellSlot.Q))
+                if (useE && E.IsReady() && minion.Health <= _Player.GetSpellDamage(minion, SpellSlot.E))
                 {
-                    Q.Cast(minion);
+                    E.Cast(minion);
                 }
             }
         }
-        static void Orbwalker_OnPostAttack(AttackableUnit target, EventArgs args)
+        private static void Flee()
         {
-            if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Combo))
+            W.Cast();
+        }
+        static void Orbwalker_OnPreAttack(AttackableUnit target, Orbwalker.PreAttackArgs args)
+        {
+            if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.LastHit))
             {
-                var hydra = new Item((int)ItemId.Ravenous_Hydra_Melee_Only);
+                var t = target as Obj_AI_Base;
+                var useQ = FarmingMenu["Qlasthit"].Cast<CheckBox>().CurrentValue;
+                var Qmana = FarmingMenu["QlasthitMana"].Cast<Slider>().CurrentValue;
 
-                if (hydra.IsOwned() && hydra.IsReady())
+                if (t != null)
                 {
-                    hydra.Cast();
+                    if (_Player.GetSpellDamage(t, SpellSlot.Q) >= t.Health && t.IsValidTarget() && Q.IsReady() && Player.Instance.ManaPercent > Qmana)
+                    {
+                        Q.Cast();
+                    }
                 }
             }
         }
@@ -227,6 +242,10 @@ namespace Reverse_Fiora
             if (DrawMenu["drawW"].Cast<CheckBox>().CurrentValue)
             {
                 new Circle() { Color = Color.Green, BorderWidth = 1, Radius = W.Range }.Draw(_Player.Position);
+            }
+            if (DrawMenu["drawE"].Cast<CheckBox>().CurrentValue)
+            {
+                new Circle() { Color = Color.Yellow, BorderWidth = 1, Radius = E.Range }.Draw(_Player.Position);
             }
             if (DrawMenu["drawR"].Cast<CheckBox>().CurrentValue)
             {
