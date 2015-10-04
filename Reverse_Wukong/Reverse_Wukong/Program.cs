@@ -89,7 +89,7 @@ namespace Reverse_Wukong
             Drawing.OnDraw += Drawing_OnDraw;
             Orbwalker.OnPreAttack += Orbwalker_OnPreAttack;
 
-            Chat.Print("Reverse Wukong loaded :)", System.Drawing.Color.White);
+            Chat.Print("Reverse Wukong loaded :)", Color.White);
 
         }
         private static void Game_OnTick(EventArgs args)
@@ -188,17 +188,23 @@ namespace Reverse_Wukong
             var Qmana = FarmingMenu["QlaneclearMana"].Cast<Slider>().CurrentValue;
             var Emana = FarmingMenu["ElaneclearMana"].Cast<Slider>().CurrentValue;
             var minions = ObjectManager.Get<Obj_AI_Base>().OrderBy(m => m.Health).Where(m => m.IsMinion && m.IsEnemy && !m.IsDead);
-            foreach (var minion in minions)
+            // Mudei
+            if (useQ && Q.IsReady())
             {
-                if (useQ && Q.IsReady() && Player.Instance.ManaPercent > Qmana && minion.Health <= _Player.GetSpellDamage(minion, SpellSlot.Q))
+                foreach (var minion in minions)
                 {
-                    Q.Cast();
+                    if (Player.Instance.ManaPercent > Qmana &&
+                        minion.Health <= _Player.GetSpellDamage(minion, SpellSlot.Q))
+                    {
+                        Q.Cast();
+                    }
                 }
-                if (useE && E.IsReady() && minion.IsValidTarget(E.Range) && Player.Instance.ManaPercent > Emana)
+            }
+            // Mudei
+            if (useE && E.IsReady() && minion.IsValidTarget(E.Range) && Player.Instance.ManaPercent > Emana)
                 {
                     E.Cast(minion);
                 }
-            }
         }
         private static void LastHit()
         {
