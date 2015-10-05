@@ -42,7 +42,7 @@ namespace Reverse_Wukong
             R = new Spell.Active(SpellSlot.R);
 
             Menu = MainMenu.AddMenu("Reverse Wukong", "reversewukong");
-            Menu.AddGroupLabel("Reverse Wukong V0.1");
+            Menu.AddGroupLabel("Reverse Wukong V1.0");
             Menu.AddSeparator();
             Menu.AddLabel("Made By Reverse Flash");
 
@@ -56,14 +56,14 @@ namespace Reverse_Wukong
 
             SkillMenu.AddLabel("Harass");
             SkillMenu.Add("QHarass", new CheckBox("Use Q on Harass"));
-            SkillMenu.Add("WHarass", new CheckBox("Use W on Harass"));
+            SkillMenu.Add("WHarass", new CheckBox("Use W on Harass", false));
             SkillMenu.Add("EHarass", new CheckBox("Use E on Harass"));
 
             FarmingMenu = Menu.AddSubMenu("Farming", "Farming");
             FarmingMenu.AddGroupLabel("Farming");
             FarmingMenu.AddLabel("LastHit");
             FarmingMenu.Add("Qlasthit", new CheckBox("Use Q on LastHit"));
-            FarmingMenu.Add("Elasthit", new CheckBox("Use E on LastHit"));
+            FarmingMenu.Add("QlasthitMana", new Slider("Mana % To Use Q", 30));
 
             FarmingMenu.AddLabel("LaneClear");
             FarmingMenu.Add("QLaneClear", new CheckBox("Use Q on LaneClear"));
@@ -163,15 +163,15 @@ namespace Reverse_Wukong
 
             if (Q.IsReady() && useQ && target.IsValidTarget(Q.Range) && !target.IsZombie)
             {
-                Q.Cast(target);
+                Q.Cast();
             }
             if (E.IsReady() && useE && target.IsValidTarget(E.Range) && !target.IsZombie)
             {
-                E.Cast();
+                E.Cast(target);
             }
-            if (W.IsReady() && useW && target.IsValidTarget(W.Range) && !target.IsZombie)
+            if (W.IsReady() && target.IsValidTarget(Q.Range) && useW && !target.IsZombie)
             {
-                W.Cast(target);
+                W.Cast();
             }
         }
         private static void LaneClear()
@@ -181,24 +181,23 @@ namespace Reverse_Wukong
             var Qmana = FarmingMenu["QlaneclearMana"].Cast<Slider>().CurrentValue;
             var Emana = FarmingMenu["ElaneclearMana"].Cast<Slider>().CurrentValue;
             var minions = ObjectManager.Get<Obj_AI_Base>().OrderBy(m => m.Health).Where(m => m.IsMinion && m.IsEnemy && !m.IsDead);
-            // Mudei
             if (useQ && Q.IsReady())
             {
                 foreach (var minion in minions)
-                if (useQ && Q.IsReady() && minion.IsValidTarget(E.Range) && Player.Instance.ManaPercent > Qmana && minion.Health <= _Player.GetSpellDamage(minion, SpellSlot.Q))
                 {
-                    if (Player.Instance.ManaPercent > Qmana &&
-                        minion.Health <= _Player.GetSpellDamage(minion, SpellSlot.Q))
+                    if (useQ && Q.IsReady() && minion.IsValidTarget(E.Range) && Player.Instance.ManaPercent > Qmana && minion.Health <= _Player.GetSpellDamage(minion, SpellSlot.Q))
                     {
-                        Q.Cast();
+                        if (Player.Instance.ManaPercent > Qmana && minion.Health <= _Player.GetSpellDamage(minion, SpellSlot.Q))
+                        {
+                            Q.Cast();
+                        }
+                    }
+                    if (useE && E.IsReady() && minion.IsValidTarget(E.Range) && Player.Instance.ManaPercent > Emana)
+                    {
+                        E.Cast(minion);
                     }
                 }
             }
-            // Mudei
-            if (useE && E.IsReady() && minion.IsValidTarget(E.Range) && Player.Instance.ManaPercent > Emana)
-                {
-                    E.Cast(minion);
-                }
         }
 
         private static void Flee()
